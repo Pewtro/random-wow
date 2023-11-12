@@ -1,7 +1,7 @@
 function(allstates)
     local config = aura_env.config
-    local fragmentOptions = config.fragmentOptions
     local crestOptions = config.crestOptions
+    local nascentOptions = config.nascentOptions
     local gci = C_CurrencyInfo.GetCurrencyInfo
     
     --Flightstones
@@ -10,7 +10,7 @@ function(allstates)
     local amount = fc.quantity
     local max = fc.maxQuantity
     
-    local name = aura_env.names[flightstoneId]
+    local name = aura_env.config.showFlightstonesName and fc.name or ""
     local value = amount.."/"..max
     
     local shouldShowFlightstones = config.flightstones and (config.flightstonesShowAtCap or amount < max)
@@ -20,57 +20,68 @@ function(allstates)
         show = shouldShowFlightstones,
         progressType = "static",
         value = aura_env.getColouredText(config.flightstoneValueColour, value),
-        icon = aura_env.icons[flightstoneId],
+        icon = fc.iconFileID,
         name = aura_env.getColouredText(config.flightstoneNameColour, name),
         index = aura_env.indices[flightstoneId],
     }
     
     
-    --Fragments total
-    for fragmentId, isTracked in pairs(config.fragments) do 
-        local currency = gci(fragmentId)
+    --Crests
+    for crestId, isTracked in pairs(config.crests) do 
+        local currency = gci(crestId)
         
         local earned = currency.totalEarned 
         local max = currency.maxQuantity
         
-        local shouldShow = isTracked and (fragmentOptions.showAtCap or earned < max)
+        local shouldShow = isTracked and (crestOptions.showAtCap or earned < max)
         
-        local name = fragmentOptions.showName and aura_env.names[fragmentId] or ""
+        local name = crestOptions.showName and currency.name or ""
+        
         local value = earned.."/"..max
-        
-        allstates[fragmentId] = {
-            changed = true, 
-            show = shouldShow,
-            progressType = "static",
-            value = aura_env.getColouredText(fragmentOptions.colours[fragmentId], value),
-            icon = aura_env.icons[fragmentId],
-            name = aura_env.getColouredText(fragmentOptions.colours[fragmentId], name),
-            index = aura_env.indices[fragmentId],
-        }
-        
-    end
-    
-    --Crests in inventory
-    for crestId, isTracked in pairs(config.crests) do
-        
-        local count = GetItemCount(crestId)
-        local fragmentsInInventory = GetItemCount(aura_env.crestToFragmentMap[crestId])
-        local crestsInFragments = math.floor(fragmentsInInventory/15)
-        local totalCrestCount = count + crestsInFragments
-        
-        local shouldShow = isTracked and (totalCrestCount > 0 or crestOptions.showAtNone)
-        
-        local name = crestOptions.showName and aura_env.names[crestId] or ""
-        local value = count.." (+"..crestsInFragments..")"
         
         allstates[crestId] = {
             changed = true, 
             show = shouldShow,
             progressType = "static",
             value = aura_env.getColouredText(crestOptions.colours[crestId], value),
-            icon = aura_env.icons[crestId],
+            icon = currency.iconFileID,
             name = aura_env.getColouredText(crestOptions.colours[crestId], name),
             index = aura_env.indices[crestId],
+        }
+        
+    end
+    
+    --Nascent Crests
+    for nascentId, isTracked in pairs(config.nascents) do
+        
+        local count = GetItemCount(nascentId, true)
+        
+        local currencyId = aura_env.nascentToCrestMap[nascentId]
+        local currency = gci(currencyId)
+        local availableCrests = currency.quantity
+        
+        local nascentCost = aura_env.nascentCost[nascentId]
+        local nascentsInCurrency = math.floor(availableCrests/nascentCost)
+        
+        local totalNascentCount = count + nascentsInCurrency
+        
+        local shouldShow = isTracked and (count > 0 or (nascentOptions.showFromFragments and totalNascentCount > 0) or nascentOptions.showAtNone)
+        
+        local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(nascentId)
+        
+        local value = count 
+        if(nascentOptions.showPurchasable) then
+            value = value.." (+"..nascentsInCurrency..")"
+        end
+        
+        allstates[nascentId] = {
+            changed = true, 
+            show = shouldShow,
+            progressType = "static",
+            value = aura_env.getColouredText(nascentOptions.colours[nascentId], value),
+            icon = icon,
+            name = aura_env.getColouredText(nascentOptions.colours[nascentId], name),
+            index = aura_env.indices[nascentId],
         }
     end
     
