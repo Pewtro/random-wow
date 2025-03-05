@@ -1,29 +1,32 @@
-aura_env.indices = {
-    -- Currencies
-    ["2245"] = 1, -- Flightstones
-    ["2706"] = 2, -- Whelpling's Dreaming Crest
-    ["2707"] = 3, -- Drake's Dreaming Crest
-    ["2708"] = 4, -- Wyrm's Dreaming Crest
-    ["2709"] = 5, -- Aspect's Dreaming Crest
-    -- Items
-    ["208395"] = 6, -- Nascent Whelpling's Dreaming Crest
-    ["208394"] = 8, -- Nascent Wyrm's Dreaming Crest
-    ["208393"] = 9 -- Nascent Aspect's Dreaming Crest
+aura_env.table = {
+    --The generic stones currency
+    ["stones"] = { 
+        currency = { id = 3008, index = 1 }, --Valorstones
+    },
+    --Weathered
+    ["rank1"] = { 
+        currency  = { id = 3107, index = 2 }, --Weathered Undermine Crest
+        item = { cost = 30, id = 230937, index = 6 }, --Nascent Weathered Undermine Crest
+        achievement = 40942, --Weathered of the Undermine
+    },
+    --Carved
+    ["rank2"] = { 
+        currency = { id = 3108, index = 3 }, --Carved Undermine Crest
+        achievement = 40943, --Carved of the Undermine
+    },
+    --Runed
+    ["rank3"] = {
+        currency  = { id = 3109, index = 4 }, --Runed Undermine Crest
+        item = { cost = 45, id = 230936, index = 7 }, --Nascent Runed Undermine Crest
+        achievement = 40944, --Runed of the Undermine
+    },
+    --Gilded
+    ["rank4"] = {
+        currency  = { id = 3110, index = 5 }, --Gilded Undermine Crest
+        item = { cost = 90, id = 230935, index = 8 }, --Nascent Gilded Undermine Crest
+        achievement = 40945, --Gilded of the Undermine
+    },
 }
-
-aura_env.nascentToCrestMap = {
-    ["208395"] = 2706, -- Nascent Whelpling's Dreaming Crest
-    ["208394"] = 2708, -- Nascent Wyrm's Dreaming Crest
-    ["208393"] = 2709 -- Nascent Aspect's Dreaming Crest
-}
-
-aura_env.nascentCost = {
-    ["208395"] = 30, -- Nascent Whelpling's Dreaming Crest
-    ["208394"] = 45, -- Nascent Wyrm's Dreaming Crest
-    ["208393"] = 60 -- Nascent Aspect's Dreaming Crest
-}
-
-local config = aura_env.config
 
 local getColour = function(colour)
     return CreateColor(unpack(colour)):GenerateHexColor()
@@ -35,7 +38,3 @@ aura_env.getColouredText = function(colourTable, text)
     return "|c" .. colour .. textWithFallback .. "|r"
 end
 
-aura_env.getCrestCount = function(crestId, count, countInFrag)
-    local color = getColour(config.crestOptions.colours[crestId])
-    return "|c" .. color .. count .. " (+" .. countInFrag .. ")|r"
-end

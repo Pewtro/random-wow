@@ -4,88 +4,129 @@ function(allstates)
     local nascentOptions = config.nascentOptions
     local gci = C_CurrencyInfo.GetCurrencyInfo
     
-    --Flightstones
-    local flightstoneId = "2245"
-    local fc = gci(flightstoneId)
+    --Flight/Valorstones
+    local stones = aura_env.table["stones"].currency
+    local fc = gci(stones.id)
     local amount = fc.quantity
     local max = fc.maxQuantity
     
-    local name = aura_env.config.showFlightstonesName and fc.name or ""
+    local name = aura_env.config.showValorstonesName and fc.name or ""
     local value = amount.."/"..max
     
-    local shouldShowFlightstones = config.flightstones and (config.flightstonesShowAtCap or amount < max)
+    local shouldShowValorstones = config.valorstones and (config.valorstonesShowAtCap or amount < max)
     
-    allstates[flightstoneId] = {
+    allstates[stones.id] = {
         changed = true,
-        show = shouldShowFlightstones,
+        show = shouldShowValorstones,
         progressType = "static",
-        value = aura_env.getColouredText(config.flightstoneValueColour, value),
+        amount = aura_env.getColouredText(config.valorstoneValueColour, value),
         icon = fc.iconFileID,
-        name = aura_env.getColouredText(config.flightstoneNameColour, name),
-        index = aura_env.indices[flightstoneId],
+        name = aura_env.getColouredText(config.valorstoneNameColour, name),
+        index = stones.index,
     }
     
     
     --Crests
-    for crestId, isTracked in pairs(config.crests) do 
+    for crestRank, isTracked in pairs(config.crests) do 
+        local crest = aura_env.table[crestRank]
+        local crestId = crest.currency.id
         local currency = gci(crestId)
         
-        local earned = currency.totalEarned 
+        local earned = currency.totalEarned
         local max = currency.maxQuantity
         
-        local shouldShow = isTracked and (crestOptions.showAtCap or earned < max)
+        local hasAchievement = false
+        if (C_AchievementInfo.IsValidAchievement(crest.achievement)) then
+            hasAchievement = select(13, GetAchievementInfo(crest.achievement))
+        end
         
-        local name = crestOptions.showName and currency.name or ""
         
-        local value = earned.."/"..max
+        -- max == 0 indicates the cap has been removed so they can be shown regardless of amount earned
+        local shouldShow = isTracked and (crestOptions.showAtCap or earned < max or max == 0) and (not crestOptions.hideAchievement or crestOptions.hideAchievement and not hasAchievement)
+        
+        local name = currency.name
+        
+        if (name and crestOptions.shortenName) then
+            local indexToSplit = string.find(name, " ")
+            name = string.sub(name, 1, indexToSplit-1)
+        end
+        
+        local value = ""
+        if (crestOptions.showCapProgress) then 
+            if (max ~= 0) then
+                value = earned.."/"..max
+            else 
+                value = earned
+            end
+        end
+        
+        if (crestOptions.showCapProgress and crestOptions.showCurrent) then
+            value = " - " .. value
+        end
+        
+        if (crestOptions.showCurrent) then
+            value = currency.quantity .. value
+        end
         
         allstates[crestId] = {
             changed = true, 
             show = shouldShow,
             progressType = "static",
-            value = aura_env.getColouredText(crestOptions.colours[crestId], value),
+            amount = aura_env.getColouredText(crestOptions.colours[crestRank], value),
             icon = currency.iconFileID,
-            name = aura_env.getColouredText(crestOptions.colours[crestId], name),
-            index = aura_env.indices[crestId],
+            name =  crestOptions.showName and aura_env.getColouredText(crestOptions.colours[crestRank], name) or "",
+            index = crest.currency.index,
         }
         
     end
     
     --Nascent Crests
-    for nascentId, isTracked in pairs(config.nascents) do
+    for nascentRank, isTracked in pairs(config.nascents) do
+        local crest = aura_env.table[nascentRank]
+        local nascentId = crest.item.id
         
         local count = GetItemCount(nascentId, true)
         
-        local currencyId = aura_env.nascentToCrestMap[nascentId]
-        local currency = gci(currencyId)
-        local availableCrests = currency.quantity
+        local availableCrests = gci(crest.currency.id).quantity
         
-        local nascentCost = aura_env.nascentCost[nascentId]
-        local nascentsInCurrency = math.floor(availableCrests/nascentCost)
+        local nascentsInCurrency = math.floor(availableCrests/crest.item.cost)
         
         local totalNascentCount = count + nascentsInCurrency
         
-        local shouldShow = isTracked and (count > 0 or (nascentOptions.showFromFragments and totalNascentCount > 0) or nascentOptions.showAtNone)
+        local hasAchievement = false
+        if (C_AchievementInfo.IsValidAchievement(crest.achievement)) then
+            hasAchievement = select(13, GetAchievementInfo(crest.achievement))
+        end
+        
+        
+        local shouldShow = isTracked and (count > 0 or (nascentOptions.showFromFragments and totalNascentCount > 0) or nascentOptions.showAtNone) and (not nascentOptions.hideAchievement or nascentOptions.hideAchievement and not hasAchievement)
         
         local name, _, _, _, _, _, _, _, _, icon = GetItemInfo(nascentId)
         
+        if (name and nascentOptions.shortenName) then
+            local firstSpace = string.find(name, " ")
+            local indexToSplit = string.find(name, " ", firstSpace+1)
+            name = string.sub(name, 1, indexToSplit-1)
+            name = name:sub(1,1).."."..string.sub(name, firstSpace, indexToSplit-1)
+        end
+        
         local value = count 
-        if(nascentOptions.showPurchasable) then
+        if (nascentOptions.showPurchasable) then
             value = value.." (+"..nascentsInCurrency..")"
         end
+        
         
         allstates[nascentId] = {
             changed = true, 
             show = shouldShow,
             progressType = "static",
-            value = aura_env.getColouredText(nascentOptions.colours[nascentId], value),
+            amount = aura_env.getColouredText(nascentOptions.colours[nascentRank], value),
             icon = icon,
-            name = aura_env.getColouredText(nascentOptions.colours[nascentId], name),
-            index = aura_env.indices[nascentId],
+            name = nascentOptions.showName and aura_env.getColouredText(nascentOptions.colours[nascentRank], name) or "",
+            index = crest.item.id,
         }
     end
     
     return true
 end
-
 
