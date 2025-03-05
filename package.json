@@ -1,36 +1,49 @@
 {
-  "license": "ISC",
+  "author": "Putro",
+  "description": "Random WoW things, either WeakAuras, Addons or other minor development projects",
+  "repository": "https://github.com/Pewtro/random-wow",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": "^18.18 || >=20.9"
+  },
+  "packageManager": "pnpm@10.5.2",
   "devDependencies": {
-    "@types/node": "18.16.2",
-    "@typescript-eslint/eslint-plugin": "5.59.1",
-    "@typescript-eslint/parser": "5.59.1",
-    "combinate": "^1.1.11",
-    "eslint": "8.39.0",
-    "eslint-config-prettier": "8.8.0",
-    "husky": "8.0.3",
-    "lint-staged": "13.2.2",
-    "nodemon": "2.0.22",
-    "prettier": "2.8.8",
-    "ts-node": "10.9.1",
-    "typescript": "5.0.4"
+    "@putstack/eslint-config-typescript": "4.0.0",
+    "@putstack/prettier-config": "2.0.0",
+    "@types/node": "22.13.9",
+    "@typescript-eslint/eslint-plugin": "8.26.0",
+    "@typescript-eslint/parser": "8.26.0",
+    "eslint": "9.21.0",
+    "husky": "9.1.7",
+    "lint-staged": "15.4.3",
+    "npm-run-all2": "7.0.2",
+    "prettier": "3.5.3",
+    "tsx": "4.19.3",
+    "typescript": "5.8.2",
+    "typescript-eslint": "8.26.0"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings=0",
-    "lint:fix": "yarn lint --fix",
-    "prettier": "prettier . --write",
-    "prepare": "husky install"
+    "build": "tsc",
+    "dev": "tsx",
+    "lint": "eslint --format stylish --max-warnings 0 --cache .",
+    "lint:ci": "npm-run-all -p -l lint typecheck stylecheck",
+    "lint:fix": "pnpm lint --fix",
+    "prepare": "husky",
+    "stylecheck": "prettier --check .",
+    "typecheck": "tsc --noEmit"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,json,md,mdx,yml,graphql,scss,css}": [
+    "*.{ts,tsx,js,jsx,mjs,md,mdx,yaml,yml,json}": [
       "prettier --write"
     ],
-    "*.{ts,tsx,js,jsx}": [
-      "yarn --silent eslint --fix --max-warnings=0"
+    "*.{ts,tsx,js,jsx,mjs}": [
+      "pnpm --silent lint:fix"
     ]
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

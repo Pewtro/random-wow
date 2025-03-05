@@ -1,10 +1,38 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2019",
-    "jsx": "preserve",
-    "sourceMap": true,
-    "esModuleInterop": true
+    /* Basic Options */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Default library settings */
+    "lib": ["ESNext"],
+
+    /* We transpile with TypeScript: */
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "outDir": "dist",
+    "sourceMap": true
+
+    /* If transpiling with tsup */
+    //"noEmit": true,
+    //"module": "Preserve",
+    //"moduleResolution": "Bundler",
+
+    /* AND if you're building for a library: */
+    //"declaration": true,
+    /* AND if you're building for a library in a monorepo: */
+    //"composite": true,
+    //"declarationMap": true,
   },
-  "exclude": ["node_modules", "**/node_modules/*"]
+  "include": ["*.*ts", "*.*js", "src/**/*"]
 }
