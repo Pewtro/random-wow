@@ -14,9 +14,7 @@ function(allstates)
                 local friendship = C_GossipInfo.GetFriendshipReputation(factionID)
                 
                 --------------------- Check if it's a renown faction ---------------------
-                if factionData and
-                (general.showRenownProg or general.showRenownLevel) 
-                and not isMaxRenown or (isMaxRenown and not general.hideAtMaxRenown)
+                if factionData and (general.showRenownProg or general.showRenownLevel) 
                 then 
                     local repName = factionData["name"]
                     local renownLevel = factionData["renownLevel"]
@@ -29,7 +27,10 @@ function(allstates)
                     local maxRenownLevel = maxRenownLevelData["level"]
                     
                     --Should given renown faction be shown
-                    local showRenownFaction = (renownLevel > 0 or renownReputationEarned > 0 or general.showUnmetRenownFaction) and (not general.onlyShowMaxRenownIfParagonBox or hasRewardPending or not isMaxRenown)
+                    local showRenownFaction = 
+                    (renownLevel > 0 or renownReputationEarned > 0 or general.showUnmetRenownFaction) and 
+                    (not general.onlyShowMaxRenownIfParagonBox or hasRewardPending or not isMaxRenown) and 
+                    (not isMaxRenown or (isMaxRenown and not general.hideAtMaxRenown))
                     
                     allstates[factionID] = {
                         changed = true,
@@ -132,4 +133,3 @@ function(allstates)
     
     return true
 end
-
