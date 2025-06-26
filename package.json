@@ -7,7 +7,7 @@
   "engines": {
     "node": "^18.18 || >=20.9"
   },
-  "packageManager": "pnpm@10.5.2",
+  "packageManager": "pnpm@10.12.4",
   "devDependencies": {
     "@putstack/eslint-config-typescript": "4.6.0",
     "@putstack/prettier-config": "2.0.0",
