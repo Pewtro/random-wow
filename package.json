@@ -9,19 +9,17 @@
   },
   "packageManager": "pnpm@10.5.2",
   "devDependencies": {
-    "@putstack/eslint-config-typescript": "4.0.0",
+    "@putstack/eslint-config-typescript": "4.6.0",
     "@putstack/prettier-config": "2.0.0",
-    "@types/node": "22.13.9",
-    "@typescript-eslint/eslint-plugin": "8.26.0",
-    "@typescript-eslint/parser": "8.26.0",
-    "eslint": "9.21.0",
+    "@types/node": "24.0.4",
+    "eslint": "9.29.0",
     "husky": "9.1.7",
-    "lint-staged": "15.4.3",
-    "npm-run-all2": "7.0.2",
-    "prettier": "3.5.3",
-    "tsx": "4.19.3",
-    "typescript": "5.8.2",
-    "typescript-eslint": "8.26.0"
+    "lint-staged": "16.1.2",
+    "npm-run-all2": "8.0.4",
+    "prettier": "3.6.1",
+    "tsx": "4.20.3",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.35.0"
   },
   "scripts": {
     "build": "tsc",
@@ -43,7 +41,8 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "esbuild"
+      "esbuild",
+      "unrs-resolver"
     ]
   }
 }
